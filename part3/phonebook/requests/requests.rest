@@ -1,0 +1,14 @@
+GET http://localhost:3001/info
+###
+GET http://localhost:3001/api/persons
+###
+DELETE http://localhost:3001/api/persons/3
+###
+POST http://localhost:3001/api/persons
+content-type: application/json
+//nigga
+
+{
+    "name": "Bana nana",
+    "number": "123 456 789"
+}
