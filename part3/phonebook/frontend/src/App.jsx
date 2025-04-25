@@ -114,12 +114,6 @@ const Notification = ({ notification }) => {
 };
 
 const App = () => {
-    /*const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);*/
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
@@ -135,7 +129,7 @@ const App = () => {
                 setPersons(data);
             })
             .catch((err) => {
-                newNotification(err.message, "error");
+                newNotification(err.response.data.error, "error");
             });
     }, []);
 
@@ -184,7 +178,7 @@ const App = () => {
                         );
                         setPersons(persons.filter((obj) => obj !== person));
                     } else {
-                        newNotification(err.message, "error");
+                        newNotification(err.response.data.error, "error");
                     }
                 });
         } else console.log("Deleting cancelled from window.confirm");
@@ -201,6 +195,7 @@ const App = () => {
                 const copy = [...persons];
                 copy[index] = updPerson; //updating the obj in the copy arr
                 setPersons(copy); //updating the persons arr
+                newNotification(`${newName} succesfully updated`, "success");
             })
             .catch((err) => {
                 if (err.status == 404) {
@@ -209,26 +204,25 @@ const App = () => {
                         "error"
                     );
                 } else {
-                    newNotification(err.message, "error");
+                    newNotification(err.response.data.error, "error");
                 }
             });
     };
 
     const createNewPerson = () => {
-        if (persons.some((person) => person.name === newName)) {
+        if (newName == "" || newNumber == "") {
+            //empty field check
+            alert("both name and phone number are required");
+        } else if (persons.some((person) => person.name === newName)) {
             if (
                 window.confirm(
                     `Do you want to update ${newName}'s phone number?`
                 )
             ) {
                 updateNumber(newName, newNumber);
-                newNotification(`${newName} succesfully updated`, "success");
             } else {
                 console.log("Updating cancelled from window.confirm");
             }
-        } else if (newName == "" || newNumber == "") {
-            //empty field check
-            alert("both name and phone number are required");
         } else {
             console.log("creating new person", newName, newNumber);
             servicePerson
@@ -242,7 +236,7 @@ const App = () => {
                     );
                 })
                 .catch((err) => {
-                    newNotification(err.message, "error");
+                    newNotification(err.response.data.error, "error");
                 });
         }
         setNewName("");
