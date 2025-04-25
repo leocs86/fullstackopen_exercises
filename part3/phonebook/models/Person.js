@@ -1,11 +1,7 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
-if (process.argv.length < 3) {
-    console.log("[!] Password needed as an argument");
-    process.exit(1);
-}
-
-const password = process.argv[2];
+const password = process.env.PASSWORD;
 
 //DO NOT SAVE YOUR PASSWORD
 const url = `mongodb+srv://lcs:${password}@phonebook.afhg13q.mongodb.net/notebook?retryWrites=true&w=majority&appName=Phonebook`;
@@ -16,8 +12,20 @@ const personSchema = new mongoose.Schema({
     name: String,
     number: String,
 });
+
+personSchema.set("toJSON", {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString(); //returns a string instead of an object
+        delete returnedObject._id; //does not return _id
+        delete returnedObject.__v; //does not return __v
+    },
+});
+
 const Person = mongoose.model("Person", personSchema);
 
+module.exports = Person;
+
+/*
 if (process.argv.length === 5) {
     const person = new Person({
         name: process.argv[3],
@@ -37,4 +45,4 @@ if (process.argv.length === 5) {
         });
         mongoose.connection.close(); //closing the connection
     });
-}
+}*/

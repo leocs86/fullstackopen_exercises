@@ -1,9 +1,9 @@
 const express = require("express");
-const app = express();
 const morgan = require("morgan");
+const Person = require("./models/Person");
 
+const app = express();
 app.use(express.static("dist"));
-
 app.use(express.json());
 
 morgan.token("data", (req, res) => {
@@ -19,30 +19,6 @@ const getRandomInt = (max) => {
     return Math.floor(Math.random() * max);
 };
 
-/*
-let persons = [
-    {
-        id: "1",
-        name: "Arto Hellas",
-        number: "040-123456",
-    },
-    {
-        id: "2",
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-    },
-    {
-        id: "3",
-        name: "Dan Abramov",
-        number: "12-43-234345",
-    },
-    {
-        id: "4",
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-    },
-];*/
-
 let persons = [];
 
 app.get("/", (request, response) => {
@@ -50,18 +26,20 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-    response.json(persons);
+    Person.find({}).then((resp) => {
+        response.json(resp);
+    });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-    const id = request.params.id;
-    const person = persons.find((obj) => obj.id === id);
-
-    if (person) {
-        response.json(person);
-    } else {
-        response.status(404).json({ error: "person doesn't exist" });
-    }
+    Person.findById(request.params.id).then((person) => {
+        //null or person
+        if (person) {
+            response.json(person);
+        } else {
+            response.status(404).json({ error: "person doesn't exist" });
+        }
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -75,30 +53,37 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
+    console.log("post");
     if (!request.body.name || !request.body.number) {
         return response.status(400).json({ error: "content missing" });
     }
 
-    if (persons.find((obj) => obj.name === request.body.name)) {
-        return response
-            .status(409)
-            .json({ error: "person.name already exists" });
-    }
+    Person.exists({ name: request.body.name }).then((resp) => {
+        //check if person exists -> true
+        if (resp) {
+            return response
+                .status(409)
+                .json({ error: "person.name already exists" });
+        } else {
+            const person = new Person({
+                name: request.body.name,
+                number: request.body.number,
+            });
 
-    const person = request.body;
-    person.id = String(getRandomInt(1000));
-    response.status(201).json(person);
-
-    persons = persons.concat(person);
+            person.save().then((resp) => {
+                response.status(201).json(person);
+            });
+        }
+    });
 });
 
 app.get("/info", (request, response) => {
     const now = new Date();
-    response.send(
-        `<p>Phonebook has info for ${
-            persons.length
-        } persons</p><p>${now.toString()}</p>`
-    );
+    Person.countDocuments().then((result) => {
+        response.send(
+            `<p>Phonebook has info for ${result} persons</p><p>${now.toString()}</p>`
+        );
+    });
 });
 
 const PORT = process.env.PORT || 3001;

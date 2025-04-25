@@ -2,13 +2,15 @@ GET http://localhost:3001/info
 ###
 GET http://localhost:3001/api/persons
 ###
-DELETE http://localhost:3001/api/persons/3
+GET http://localhost:3001/api/persons/680bb2ab6868d4460ef6b17c
+###
+DELETE http://localhost:3001/api/persons/6809046ef6b6135dc89a95d7
 ###
 POST http://localhost:3001/api/persons
 content-type: application/json
 //nigga
 
 {
-    "name": "Bana nana",
+    "name": "bla",
     "number": "123 456 789"
 }
