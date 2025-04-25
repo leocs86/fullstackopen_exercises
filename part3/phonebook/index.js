@@ -15,76 +15,110 @@ app.use(
     )
 );
 
-const getRandomInt = (max) => {
-    return Math.floor(Math.random() * max);
-};
-
-let persons = [];
-
 app.get("/", (request, response) => {
     response.send("<h1>Hello World!</h1><p>Phonebook Backend</p>");
 });
 
-app.get("/api/persons", (request, response) => {
-    Person.find({}).then((resp) => {
-        response.json(resp);
-    });
+app.get("/api/persons", (request, response, next) => {
+    Person.find({})
+        .then((resp) => {
+            response.json(resp);
+        })
+        .catch((err) => next(err));
 });
 
-app.get("/api/persons/:id", (request, response) => {
-    Person.findById(request.params.id).then((person) => {
-        //null or person
-        if (person) {
+app.get("/api/persons/:id", (request, response, next) => {
+    Person.findById(request.params.id)
+        .then((person) => {
+            //null or person
+            if (!person) {
+                return response
+                    .status(404)
+                    .json({ error: "person doesn't exist" });
+            }
             response.json(person);
-        } else {
-            response.status(404).json({ error: "person doesn't exist" });
-        }
-    });
+        })
+        .catch((err) => next(err));
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-    const id = request.params.id;
-    if (!persons.find((obj) => obj.id === id)) {
-        return response.status(404).json({ error: "person doesn't exist" });
-    }
-    persons = persons.filter((obj) => obj.id !== id);
-
-    response.status(204).end();
+app.delete("/api/persons/:id", (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+        .then((resp) => {
+            if (!resp) {
+                //person is not in the DB
+                return response
+                    .status(404)
+                    .json({ error: "person doesn't exist" });
+            }
+            response.status(204).end();
+        })
+        .catch((err) => next(err));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
     console.log("post");
     if (!request.body.name || !request.body.number) {
         return response.status(400).json({ error: "content missing" });
     }
 
-    Person.exists({ name: request.body.name }).then((resp) => {
-        //check if person exists -> true
-        if (resp) {
-            return response
-                .status(409)
-                .json({ error: "person.name already exists" });
-        } else {
-            const person = new Person({
-                name: request.body.name,
-                number: request.body.number,
-            });
+    Person.exists({ name: request.body.name })
+        .then((resp) => {
+            //check if person exists -> true
+            if (resp) {
+                return response
+                    .status(409)
+                    .json({ error: "person.name already exists" });
+            } else {
+                const person = new Person({
+                    name: request.body.name,
+                    number: request.body.number,
+                });
 
-            person.save().then((resp) => {
-                response.status(201).json(person);
-            });
-        }
-    });
+                person.save().then((resp) => {
+                    response.status(201).json(person);
+                });
+            }
+        })
+        .catch((err) => next(err));
 });
 
-app.get("/info", (request, response) => {
+app.put("/api/persons/:id", (request, response, next) => {
+    Person.findById(request.params.id)
+        .then((person) => {
+            if (!person) {
+                return resp.status(404).json({ error: "person doesn't exist" });
+            }
+            person.number = request.body.number;
+            return person.save().then((resp) => {
+                response.json(resp);
+            });
+        })
+        .catch((err) => next(err));
+});
+
+app.get("/info", (request, response, next) => {
     const now = new Date();
-    Person.countDocuments().then((result) => {
-        response.send(
-            `<p>Phonebook has info for ${result} persons</p><p>${now.toString()}</p>`
-        );
-    });
+    Person.countDocuments()
+        .then((result) => {
+            response.send(
+                `<p>Phonebook has info for ${result} persons</p><p>${now.toString()}</p>`
+            );
+        })
+        .catch((err) => next(err));
 });
+
+const errorHandler = (error, request, response, next) => {
+    console.log("[!] errorHandler", error.name);
+    console.error(error.message);
+
+    if (error.name === "CastError") {
+        return response.status(400).json({ error: "malformatted id" });
+    }
+
+    next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

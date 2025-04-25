@@ -182,6 +182,7 @@ const App = () => {
                             `${person.name} is not in the phonebook`,
                             "error"
                         );
+                        setPersons(persons.filter((obj) => obj !== person));
                     } else {
                         newNotification(err.message, "error");
                     }

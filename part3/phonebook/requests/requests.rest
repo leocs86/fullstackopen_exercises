@@ -2,15 +2,15 @@ GET http://localhost:3001/info
 ###
 GET http://localhost:3001/api/persons
 ###
-GET http://localhost:3001/api/persons/680bb2ab6868d4460ef6b17c
+GET http://localhost:3001/api/persons/680bc505812880656af1ef25
 ###
-DELETE http://localhost:3001/api/persons/6809046ef6b6135dc89a95d7
+DELETE http://localhost:3001/api/persons/680bc505812880656af1ef25
 ###
 POST http://localhost:3001/api/persons
 content-type: application/json
 //nigga
 
 {
-    "name": "bla",
+    "name": "Tony Montana",
     "number": "123 456 789"
 }
