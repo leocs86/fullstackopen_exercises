@@ -22,6 +22,7 @@ export default defineConfig([
             "@stylistic/js/quotes": ["error", "single"], //quotation marks
             "@stylistic/js/semi": ["error", "never"], //semicolons
             eqeqeq: "error", //equality with "==="
+            "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
             "no-trailing-spaces": "error", //no spaces at the end of line
             "object-curly-spacing": ["error", "always"], //space before and after {}
             "arrow-spacing": ["error", { before: true, after: true }], //arrow func spacing
@@ -33,6 +34,6 @@ export default defineConfig([
         languageOptions: { globals: globals.node },
     },
     {
-        ignores: ["dist/**"], //ignore files cointained here
+        ignores: ["dist/**", "frontend/**"], //ignore files cointained here
     },
 ]);
