@@ -4,8 +4,8 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-    "title": "eating pizza with ananas kills you",
-    "author": "italian fellow",
-    "url": "http://somesite.com/pizza",
-    "likes": 293
+    "title": "bohemian",
+    "author": "bh",
+    "url": "http://somesite.com/ts",
+    "likes": 2
 }
