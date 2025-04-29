@@ -8,7 +8,6 @@ DELETE http://localhost:3001/api/persons/680bc505812880656af1ef25
 ###
 POST http://localhost:3001/api/persons
 content-type: application/json
-//nigga
 
 {
     "name": "nnssjss",
