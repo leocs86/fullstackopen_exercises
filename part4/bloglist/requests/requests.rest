@@ -4,8 +4,8 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-    "title": "bohemian",
-    "author": "bh",
-    "url": "http://somesite.com/ts",
+    "title": "Snatch is very very good",
+    "author": "Pane Pizzetto",
+    "url": "http://somesite.com/bradpitt",
     "likes": 2
 }

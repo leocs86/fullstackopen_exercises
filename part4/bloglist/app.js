@@ -6,7 +6,7 @@ const blogRouter = require("./controllers/blog");
 
 const app = express();
 
-mongoose.connect(config.MONGODB_URL);
+mongoose.connect(config.MONGODB_URI);
 
 app.use(express.json());
 app.use(middleware.morgan(":method :url :status :body - :response-time ms"));
