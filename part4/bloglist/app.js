@@ -9,7 +9,12 @@ const app = express();
 mongoose.connect(config.MONGODB_URI);
 
 app.use(express.json());
-app.use(middleware.morgan(":method :url :status :body - :response-time ms"));
+if (process.env.NODE_ENV !== "test") {
+    //we don't want morgan if in test mode
+    app.use(
+        middleware.morgan(":method :url :status :body - :response-time ms")
+    );
+}
 
 app.use("/api/blogs", blogRouter);
 
