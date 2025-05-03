@@ -81,15 +81,10 @@ test("POST /api/blogs without likes will default to 0", async () => {
     );
 });
 
-test("POST /api/blogs without title OR author OR url returns 400 error", async () => {
+test("POST /api/blogs without title OR url returns 400 error", async () => {
     const noTitle = await api
         .post("/api/blogs")
         .send({ author: "xxx", url: "xxx" })
-        .expect(400)
-        .expect("Content-Type", /application\/json/);
-    const noAuthor = await api
-        .post("/api/blogs")
-        .send({ title: "xxx", url: "xxx" })
         .expect(400)
         .expect("Content-Type", /application\/json/);
     const noUrl = await api
