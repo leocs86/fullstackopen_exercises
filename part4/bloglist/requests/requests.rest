@@ -5,5 +5,7 @@ content-type: application/json
 
 {
     "title": "hola hola wakamola",
-    "author": "shis"
+    "author": "shis",
+    "url": "http://somesite.com/bradpitt",
+    "likes": 2
 }

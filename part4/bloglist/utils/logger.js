@@ -5,7 +5,7 @@ const info = (msg) => {
 };
 
 const error = (msg) => {
-    if (process.env.NODE_ENV === "test") {
+    if (process.env.NODE_ENV !== "test") {
         console.error(msg);
     } //doesn't print anything if in test mode
 };
