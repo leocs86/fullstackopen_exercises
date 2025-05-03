@@ -1,12 +1,12 @@
-const info = (msg) => {
+const info = (...args) => {
     if (process.env.NODE_ENV !== "test") {
-        console.log(msg);
+        console.log(...args);
     } //doesn't print anything if in test mode
 };
 
-const error = (msg) => {
+const error = (...args) => {
     if (process.env.NODE_ENV !== "test") {
-        console.error(msg);
+        console.error(...args);
     } //doesn't print anything if in test mode
 };
 

@@ -1,11 +1,20 @@
-GET http://localhost:3003/api/blogs
+GET http://localhost:3003/api/blogs/68134786cbxxxxxxxxxx9684
+###
+DELETE http://localhost:3003/api/blogs/681133df761b49
 ###
 POST http://localhost:3003/api/blogs
-content-type: application/json
+Content-Type: application/json
 
 {
     "title": "hola hola wakamola",
     "author": "shis",
     "url": "http://somesite.com/bradpitt",
     "likes": 2
+}
+###
+PUT http://localhost:3003/api/blogs/68134786cb9fc669cbca9684
+Content-Type: application/json
+
+{
+    "likes": 99
 }
