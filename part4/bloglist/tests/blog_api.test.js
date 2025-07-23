@@ -4,6 +4,7 @@ const supertest = require("supertest");
 const app = require("../app");
 const assert = require("node:assert");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
 
@@ -192,6 +193,100 @@ describe("with initialBlogs", () => {
             const result = await api
                 .put(`/api/blogs/xxx`)
                 .send({ likes: 99999 })
+                .expect(400)
+                .expect("Content-Type", /application\/json/);
+        });
+    });
+});
+
+const initialUsers = [
+    { username: "user1", name: "name1", password: "hash1xxxxx" },
+    { username: "user2", name: "name2", password: "hash2xxxxx" },
+];
+
+describe("with initial users", () => {
+    beforeEach(async () => {
+        await User.deleteMany({});
+        await User.insertMany(initialUsers);
+    });
+
+    describe("GET /api/users", () => {
+        test("GET /api/users returns json", async () => {
+            await api
+                .get("/api/users")
+                .expect(200)
+                .expect("Content-Type", /application\/json/);
+        });
+
+        test("GET /api/users returns all users", async () => {
+            const result = await api.get("/api/users");
+            assert(result.body.length, initialUsers.length);
+        });
+
+        test("GET /api/users doesn't return password hash", async () => {
+            const result = await api.get("/api/users");
+            const user = result.body[0];
+            assert(!user.password);
+        });
+    });
+
+    describe("POST /api/users", () => {
+        test("POST /api/users creates a new user", async () => {
+            const newUser = {
+                name: "new name",
+                username: "new username",
+                password: "new pswd hash xxxxx",
+            };
+            const result = await api
+                .post("/api/users")
+                .send(newUser)
+                .expect(201)
+                .expect("Content-Type", /application\/json/);
+
+            const newUserId = result.body.id;
+
+            const usersInDb = await api.get("/api/users");
+            assert(
+                //was the user added?
+                usersInDb.body.some((user) => {
+                    return user.id === newUserId;
+                })
+            );
+        });
+
+        test("POST /api/users username must be unique", async () => {
+            const newUser = {
+                name: "new name 2",
+                username: "user1", //already used
+                password: "new pswd 2 hash xxxxx",
+            };
+            const result = await api
+                .post("/api/users")
+                .send(newUser)
+                .expect(409)
+                .expect("Content-Type", /application\/json/);
+        });
+
+        test("POST /api/users min length for both username and password", async () => {
+            let newUser = {
+                name: "namenamename",
+                username: "us", //already used
+                password: "new pswd 2 hash xxxxx",
+            };
+            let result = await api
+                .post("/api/users")
+                .send(newUser)
+                .expect(400)
+                .expect("Content-Type", /application\/json/);
+
+            newUser = {
+                name: "namenamename",
+                username: "usernameusername", //already used
+                password: "xx",
+            };
+            result = await api
+                .post("/api/users")
+                .send(newUser)
                 .expect(400)
                 .expect("Content-Type", /application\/json/);
         });

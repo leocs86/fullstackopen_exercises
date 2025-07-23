@@ -15,6 +15,8 @@ const errorHandler = (error, request, response, next) => {
         return response.status(400).send({ error: "malformatted id" });
     } else if (error.name === "NotFoundError") {
         return response.status(404).send({ error: error.message });
+    } else if (error.name === "MongoServerError") {
+        return response.status(409).send({ error: "Username already exists" });
     }
 
     next(error);

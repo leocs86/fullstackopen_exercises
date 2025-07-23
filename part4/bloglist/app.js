@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const config = require("./utils/config");
 const middleware = require("./utils/middleware");
 const blogRouter = require("./controllers/blog");
+const userRouter = require("./controllers/user");
 
 const app = express();
 
@@ -17,6 +18,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 app.use("/api/blogs", blogRouter);
+app.use("/api/users", userRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

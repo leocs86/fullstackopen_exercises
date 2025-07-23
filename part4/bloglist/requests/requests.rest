@@ -1,12 +1,12 @@
-GET http://localhost:3003/api/blogs/68134786cbxxxxxxxxxx9684
+GET http://localhost:3003/api/blogs/
 ###
-DELETE http://localhost:3003/api/blogs/681133df761b49
+DELETE http://localhost:3003/api/blogs/6880b5fc8acb36fa7c73a6e6
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "hola hola wakamola",
+    "title": "giggano",
     "author": "shis",
     "url": "http://somesite.com/bradpitt",
     "likes": 2
@@ -17,4 +17,15 @@ Content-Type: application/json
 
 {
     "likes": 99
+}
+###
+GET http://localhost:3003/api/users
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username":"ssslksx",
+    "name":"Mich",
+    "password":"se"
 }

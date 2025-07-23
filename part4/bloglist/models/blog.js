@@ -5,6 +5,12 @@ const blogSchema = mongoose.Schema({
     author: { type: String },
     url: { type: String, required: true },
     likes: { type: Number, default: 0 },
+    user: {
+        //reference to user model
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
 });
 
 blogSchema.set("toJSON", {
