@@ -5,19 +5,66 @@ const app = require("../app");
 const assert = require("node:assert");
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const { get } = require("node:http");
+const { exit } = require("node:process");
 
 const api = supertest(app);
 
 const initialBlogs = [
-    { title: "title1", author: "author1", url: "http://url1", likes: 1 },
-    { title: "title2", author: "author2", url: "http://url2", likes: 2 },
-    { title: "title3", author: "author3", url: "http://url3", likes: 3 },
+    {
+        title: "title1",
+        author: "author1",
+        url: "http://url1",
+        likes: 1,
+    },
+    {
+        title: "title2",
+        author: "author2",
+        url: "http://url2",
+        likes: 2,
+    },
+    {
+        title: "title3",
+        author: "author3",
+        url: "http://url3",
+        likes: 3,
+    },
 ];
+
+const getToken = async () => {
+    const result = await api
+        .post("/api/login")
+        .send({ username: "user", password: "pswd" });
+
+    const token = JSON.parse(result.text).token;
+    return token;
+};
 
 describe("with initialBlogs", () => {
     beforeEach(async () => {
+        let blogsIds = [];
         await Blog.deleteMany({});
-        await Blog.insertMany(initialBlogs);
+        await User.deleteMany({});
+        const user = new User({
+            name: "user",
+            username: "user",
+            password:
+                "$2a$10$OKzR9Af5OwJG66hll7D8k.ql8Fr9yn8uYC2p3TxHQrgIwEKwjsmmK", //hash for "pswd"
+        });
+        const savedUser = await user.save();
+        const blogsWithUser = initialBlogs.map((blog) => ({
+            ...blog,
+            user: savedUser._id,
+        }));
+        const savedBlogs = await Blog.insertMany(blogsWithUser);
+
+        //also linking blogs to user
+        savedBlogs.forEach((i) => blogsIds.push(i._id));
+        await User.findByIdAndUpdate(
+            savedUser._id,
+            { blogs: blogsIds },
+            { new: true }
+        );
     });
 
     describe("GET /api/blogs", () => {
@@ -76,9 +123,11 @@ describe("with initialBlogs", () => {
                 url: "new url",
                 likes: 9,
             };
+            const token = await getToken();
             const result = await api
                 .post("/api/blogs")
                 .send(newBlog)
+                .set("Authorization", `Bearer ${token}`)
                 .expect(201)
                 .expect("Content-Type", /application\/json/);
             const newBlogId = result.body.id;
@@ -98,9 +147,11 @@ describe("with initialBlogs", () => {
                 author: "new author",
                 url: "new url",
             };
+            const token = await getToken();
             const result = await api
                 .post("/api/blogs")
                 .send(newBlog)
+                .set("Authorization", `Bearer ${token}`)
                 .expect(201)
                 .expect("Content-Type", /application\/json/);
             const newBlogId = result.body.id;
@@ -115,14 +166,17 @@ describe("with initialBlogs", () => {
         });
 
         test("POST /api/blogs without title OR url returns 400 error", async () => {
+            const token = await getToken();
             const noTitle = await api
                 .post("/api/blogs")
                 .send({ author: "xxx", url: "xxx" })
+                .set("Authorization", `Bearer ${token}`)
                 .expect(400)
                 .expect("Content-Type", /application\/json/);
             const noUrl = await api
                 .post("/api/blogs")
                 .send({ title: "xxx", author: "xxx" })
+                .set("Authorization", `Bearer ${token}`)
                 .expect(400)
                 .expect("Content-Type", /application\/json/);
         });
@@ -132,8 +186,12 @@ describe("with initialBlogs", () => {
         test("DELETE /api/blogs/:id deletes blog (code:204)", async () => {
             const allBlogs = await api.get("/api/blogs/");
             const id = allBlogs.body[0].id; //get the id from the /api/blogs/ route
+            const token = await getToken();
 
-            const result = await api.delete(`/api/blogs/${id}`).expect(204);
+            await api
+                .delete(`/api/blogs/${id}`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(204);
 
             const newAllBlogs = await api.get("/api/blogs/"); //makes sure the blog was actually deleted
             assert(
@@ -145,16 +203,20 @@ describe("with initialBlogs", () => {
 
         test("DELETE /api/blogs/:id not found", async () => {
             const validNonexistingId = new mongoose.Types.ObjectId(); //generate a valid id (otherwise malformatted id will be triggered)
+            const token = await getToken();
 
-            const result = await api
+            await api
                 .delete(`/api/blogs/${validNonexistingId}`)
+                .set("Authorization", `Bearer ${token}`)
                 .expect(404)
                 .expect("Content-Type", /application\/json/);
         });
 
         test("DELETE /api/blogs/:id malformatted id", async () => {
-            const result = await api
+            const token = await getToken();
+            await api
                 .delete(`/api/blogs/xxx`)
+                .set("Authorization", `Bearer ${token}`)
                 .expect(400)
                 .expect("Content-Type", /application\/json/);
         });
@@ -165,7 +227,7 @@ describe("with initialBlogs", () => {
             const allBlogs = await api.get("/api/blogs/");
             const id = allBlogs.body[0].id; //get the id from the /api/blogs/ route
 
-            const result = await api
+            await api
                 .put(`/api/blogs/${id}`)
                 .send({ likes: 99999 })
                 .expect(200)
@@ -182,7 +244,7 @@ describe("with initialBlogs", () => {
         test("PUT /api/blogs/:id not found", async () => {
             const validNonexistingId = new mongoose.Types.ObjectId(); //generate a valid id (otherwise malformatted id will be triggered)
 
-            const result = await api
+            await api
                 .put(`/api/blogs/${validNonexistingId}`)
                 .send({ likes: 99999 })
                 .expect(404)
@@ -190,7 +252,7 @@ describe("with initialBlogs", () => {
         });
 
         test("PUT /api/blogs/:id malformatted id", async () => {
-            const result = await api
+            await api
                 .put(`/api/blogs/xxx`)
                 .send({ likes: 99999 })
                 .expect(400)
@@ -260,7 +322,7 @@ describe("with initial users", () => {
                 username: "user1", //already used
                 password: "new pswd 2 hash xxxxx",
             };
-            const result = await api
+            await api
                 .post("/api/users")
                 .send(newUser)
                 .expect(409)
@@ -270,21 +332,19 @@ describe("with initial users", () => {
         test("POST /api/users min length for both username and password", async () => {
             let newUser = {
                 name: "namenamename",
-                username: "us", //already used
+                username: "us", //invalid username
                 password: "new pswd 2 hash xxxxx",
             };
-            let result = await api
+            await api
                 .post("/api/users")
                 .send(newUser)
                 .expect(400)
                 .expect("Content-Type", /application\/json/);
 
-            newUser = {
-                name: "namenamename",
-                username: "usernameusername", //already used
-                password: "xx",
-            };
-            result = await api
+            newUser.username = "123456";
+            newUser.password = "xx"; //invalid pswd
+
+            await api
                 .post("/api/users")
                 .send(newUser)
                 .expect(400)

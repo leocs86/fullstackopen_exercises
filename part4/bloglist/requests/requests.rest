@@ -1,13 +1,15 @@
-GET http://localhost:3003/api/blogs/
+GET http://localhost:3003/api/blogs/6882c2fd01e2c5dc1ea7d36b
 ###
-DELETE http://localhost:3003/api/blogs/6880b5fc8acb36fa7c73a6e6
+DELETE http://localhost:3003/api/blogs/6882c2fd01e2c5dc1ea7d36b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbW1hIiwiaWQiOiI2ODgyMGZjZDQzMzc5ZGYzNmMxZTUxMTQiLCJpYXQiOjE3NTM0NTEzMDV9.IHD2P9a1KpWozAfZzGUUQMEeYqqfcnY-mgCUHzfBfNw
 ###
 POST http://localhost:3003/api/blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbW1hIiwiaWQiOiI2ODgyMGZjZDQzMzc5ZGYzNmMxZTUxMTQiLCJpYXQiOjE3NTM0NTEzMDV9.IHD2P9a1KpWozAfZzGUUQMEeYqqfcnY-mgCUHzfBfNw
 Content-Type: application/json
 
 {
-    "title": "giggano",
-    "author": "shis",
+    "title": "NATASJHA",
+    "author": "HERE",
     "url": "http://somesite.com/bradpitt",
     "likes": 2
 }
@@ -25,7 +27,15 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username":"ssslksx",
+    "username":"mamma",
     "name":"Mich",
-    "password":"se"
+    "password":"mamma"
+}
+###
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username":"mamma",
+    "password":"mamma"
 }

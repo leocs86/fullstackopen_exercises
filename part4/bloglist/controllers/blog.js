@@ -1,8 +1,8 @@
 const blogRouter = require("express").Router();
 require("express-async-errors");
+const logger = require("../utils/logger");
 
 const Blog = require("../models/blog");
-const User = require("../models/user");
 
 blogRouter.get("/", async (request, response, next) => {
     const blogs = await Blog.find({}).populate("user", {
@@ -25,7 +25,30 @@ blogRouter.get("/:id", async (request, response, next) => {
 });
 
 blogRouter.delete("/:id", async (request, response, next) => {
-    const result = await Blog.findByIdAndDelete(request.params.id);
+    if (!request.token) {
+        //no authorization token
+        const err = new Error("missing Authorization token");
+        err.name = "AuthorizationError";
+        throw err;
+    }
+    const user = request.user; //middleware takes care of problems
+
+    const blogToDelete = await Blog.findById(request.params.id);
+    if (!blogToDelete) {
+        //blog doesn't exist
+        const err = new Error("blog not found");
+        err.name = "NotFoundError";
+        throw err;
+    }
+
+    if (blogToDelete.user.toString() != user._id.toString()) {
+        //check if user created the blog
+        const err = new Error("user of the token didn't create the blog");
+        err.name = "ForbiddenError";
+        throw err;
+    }
+
+    const result = await Blog.findByIdAndDelete(request.params.id); //delete the blog
 
     if (!result) {
         //difference between blog being deleted (204) and not existing blog (404)
@@ -53,7 +76,13 @@ blogRouter.put("/:id", async (request, response, next) => {
 });
 
 blogRouter.post("/", async (request, response, next) => {
-    const user = await User.findOne();
+    if (!request.token) {
+        //no authorization token
+        const err = new Error("missing Authorization token");
+        err.name = "AuthorizationError";
+        throw err;
+    }
+    const user = request.user; //middleware takes care of problems
 
     const blog = new Blog({
         ...request.body,
