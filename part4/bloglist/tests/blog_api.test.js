@@ -5,8 +5,6 @@ const app = require("../app");
 const assert = require("node:assert");
 const Blog = require("../models/blog");
 const User = require("../models/user");
-const { get } = require("node:http");
-const { exit } = require("node:process");
 
 const api = supertest(app);
 
