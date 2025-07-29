@@ -10,7 +10,7 @@ export default defineConfig({
                 target: "http://localhost:3003",
                 changeOrigin: true,
                 configure: (proxy) => {
-                    proxy.on("proxyReq", (proxyReq, req, res) => {
+                    proxy.on("proxyReq", (proxyReq, req) => {
                         console.log(`[VITE-PROXY] ${req.method} ${req.url}`);
                     });
                 },

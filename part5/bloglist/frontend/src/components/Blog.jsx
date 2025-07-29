@@ -1,5 +1,6 @@
 import blogService from "../services/blogService";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
     const username = blog.user ? blog.user.username : "-";
@@ -88,6 +89,16 @@ const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
             {visibility && more}
         </>
     );
+};
+
+//const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
+Blog.PropTypes = {
+    blog: PropTypes.object.isRequired,
+    setNotification: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    token: PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
+    onLiked: PropTypes.func.isRequired,
 };
 
 export default Blog;
