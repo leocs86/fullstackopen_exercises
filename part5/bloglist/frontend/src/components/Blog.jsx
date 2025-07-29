@@ -92,7 +92,7 @@ const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
 };
 
 //const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
-Blog.PropTypes = {
+Blog.propTypes = {
     blog: PropTypes.object.isRequired,
     setNotification: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
