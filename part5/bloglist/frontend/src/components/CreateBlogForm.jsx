@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "../services/blogService";
 
-const CreateBlogForm = ({ token, setNotification, blogs, setBlogs }) => {
+const CreateBlogForm = ({ token, setNotification, onCreate, hideBlogForm }) => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [url, setUrl] = useState("");
@@ -15,11 +15,11 @@ const CreateBlogForm = ({ token, setNotification, blogs, setBlogs }) => {
                 url,
                 token,
             });
-            const oldBlogs = blogs;
-            setBlogs([...oldBlogs, result]);
+            onCreate(result);
             setTitle("");
             setAuthor("");
             setUrl("");
+            hideBlogForm();
             setNotification({
                 msg: `new blog created: ${title}`,
                 type: "info",
@@ -27,9 +27,10 @@ const CreateBlogForm = ({ token, setNotification, blogs, setBlogs }) => {
             setTimeout(() => {
                 setNotification({});
             }, 5000);
+            console.log(`[+] ${result.id} created`);
         } catch (exception) {
             setNotification({
-                msg: "Error in creating new note",
+                msg: "Error in creating new blog",
                 type: "error",
             });
             setTimeout(() => {

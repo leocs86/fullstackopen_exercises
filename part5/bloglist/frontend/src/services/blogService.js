@@ -16,7 +16,7 @@ const createNew = async ({ title, author, url, token }) => {
         },
         {
             headers: {
-                Authorization: `Bearer ${token}`, // replace `token` with your actual token string
+                Authorization: `Bearer ${token}`,
             },
         }
     );
@@ -24,4 +24,22 @@ const createNew = async ({ title, author, url, token }) => {
     return response.data;
 };
 
-export default { getAll, createNew };
+const increaseLikes = async ({ blogId, currentLikes }) => {
+    const response = await axios.put(`${baseUrl}/${blogId}`, {
+        likes: currentLikes + 1,
+    });
+
+    return response.data;
+};
+
+const deleteBlog = async ({ blogId, token }) => {
+    const response = await axios.delete(`${baseUrl}/${blogId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return response.data;
+};
+
+export default { getAll, createNew, increaseLikes, deleteBlog };
