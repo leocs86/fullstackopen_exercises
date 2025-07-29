@@ -13,7 +13,10 @@ blogRouter.get("/", async (request, response, next) => {
 });
 
 blogRouter.get("/:id", async (request, response, next) => {
-    const blog = await Blog.findById(request.params.id);
+    const blog = await Blog.findById(request.params.id).populate("user", {
+        username: 1,
+        name: 1,
+    });
 
     if (!blog) {
         const err = new Error("blog not found");
@@ -90,11 +93,15 @@ blogRouter.post("/", async (request, response, next) => {
     });
 
     const savedBlog = await blog.save();
+    const populatedBlog = await savedBlog.populate("user", {
+        username: 1,
+        name: 1,
+    }); //returns info about user as well
 
     user.blogs = user.blogs.concat(savedBlog._id); //adds to the user blogs list the id of the blog just created
     await user.save();
 
-    response.status(201).json(savedBlog);
+    response.status(201).json(populatedBlog);
 });
 
 module.exports = blogRouter;
