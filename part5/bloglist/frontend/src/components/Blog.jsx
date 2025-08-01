@@ -60,10 +60,13 @@ const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
     };
 
     const more = (
-        <p style={{ backgroundColor: "#f1f1f1" }}>
+        <p style={{ backgroundColor: "#f1f1f1" }} data-testid="more">
             url: {blog.url}
             <br />
-            likes: {blog.likes} <button onClick={handleLike}>like</button>
+            likes: {blog.likes}{" "}
+            <button data-testid="likeBtn" onClick={handleLike}>
+                like
+            </button>
             <br />
             username: {username}
             <br />
@@ -77,9 +80,10 @@ const Blog = ({ blog, setNotification, onDelete, token, userId, onLiked }) => {
 
     return (
         <>
-            <p>
+            <p data-testid="title-author">
                 {blog.title} (by {blog.author})
                 <button
+                    data-testid="toggleVisibilityBtn"
                     onClick={toggleVisibility}
                     style={{ marginLeft: ".5rem" }}
                 >

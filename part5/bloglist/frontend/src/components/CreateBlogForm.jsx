@@ -47,15 +47,17 @@ const CreateBlogForm = ({ token, setNotification, onCreate, hideBlogForm }) => {
                     type="text"
                     value={title}
                     name="Title"
+                    data-testid="title"
                     onChange={({ target }) => setTitle(target.value)}
                 />
             </div>
             <div>
                 author
                 <input
-                    type="author"
+                    type="text"
                     value={author}
                     name="Author"
+                    data-testid="author"
                     onChange={({ target }) => setAuthor(target.value)}
                 />
             </div>
@@ -65,10 +67,13 @@ const CreateBlogForm = ({ token, setNotification, onCreate, hideBlogForm }) => {
                     type="text"
                     value={url}
                     name="Url"
+                    data-testid="url"
                     onChange={({ target }) => setUrl(target.value)}
                 />
             </div>
-            <button type="submit">create</button>
+            <button type="submit" data-testid="submitBtn">
+                create
+            </button>
         </form>
     );
 };
