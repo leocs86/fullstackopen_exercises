@@ -23,6 +23,11 @@ if (process.env.NODE_ENV !== "test") {
     );
 }
 
+if (process.env.NODE_ENV === "dev-test") {
+    const tHRouter = require("./controllers/testHelper");
+    app.use("/api/testHelper", tHRouter);
+}
+
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/blogs", middleware.getUser, blogRouter);

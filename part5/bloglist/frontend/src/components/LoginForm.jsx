@@ -23,7 +23,7 @@ const LoginForm = ({ setNotification, setUser }) => {
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} data-testid="login-form">
             <div>
                 username
                 <input

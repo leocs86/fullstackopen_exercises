@@ -54,7 +54,7 @@ const App = () => {
 
     const blogList = () => {
         return (
-            <div>
+            <div data-testid="blogList">
                 <h2>blogs</h2>
                 <p>
                     <strong>{user.name}</strong> logged in
