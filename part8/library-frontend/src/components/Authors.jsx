@@ -1,0 +1,38 @@
+import { ALL_AUTHORS } from "../queries";
+import { useQuery } from "@apollo/client/react";
+import EditAuthor from "./EditAuthor";
+
+const Authors = () => {
+    const resp = useQuery(ALL_AUTHORS);
+    if (resp.loading) {
+        return <p>loading...</p>;
+    }
+    const authors = resp.data.allAuthors;
+
+    return (
+        <>
+            <div>
+                <h2>authors</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th>born</th>
+                            <th>books</th>
+                        </tr>
+                        {authors.map((a) => (
+                            <tr key={a.id}>
+                                <td>{a.name}</td>
+                                <td>{a.born}</td>
+                                <td>{a.bookCount}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <EditAuthor authors={authors} />
+        </>
+    );
+};
+
+export default Authors;
