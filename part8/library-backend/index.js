@@ -142,7 +142,12 @@ const resolvers = {
                     author = await author.save();
                 }
 
-                const newBook = new Book({ ...args, author: author.id });
+                const newBook = new Book({
+                    title: args.title,
+                    published: args.published,
+                    genres: args.genres,
+                    author: author.id, // Use the ObjectId from the author we found/created
+                });
                 return (await newBook.save()).populate("author");
             } catch (err) {
                 if (err.code === 11000) {

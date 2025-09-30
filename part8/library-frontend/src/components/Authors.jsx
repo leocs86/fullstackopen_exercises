@@ -2,7 +2,7 @@ import { ALL_AUTHORS } from "../queries";
 import { useQuery } from "@apollo/client/react";
 import EditAuthor from "./EditAuthor";
 
-const Authors = () => {
+const Authors = ({ currentUser }) => {
     const resp = useQuery(ALL_AUTHORS);
     if (resp.loading) {
         return <p>loading...</p>;
@@ -30,7 +30,7 @@ const Authors = () => {
                     </tbody>
                 </table>
             </div>
-            <EditAuthor authors={authors} />
+            {currentUser ? <EditAuthor authors={authors} /> : <></>}
         </>
     );
 };

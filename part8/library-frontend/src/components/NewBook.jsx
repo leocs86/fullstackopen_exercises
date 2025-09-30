@@ -14,7 +14,11 @@ const NewBook = () => {
         onError: (e) => {
             console.log(e);
         },
-        refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }], //refetching after adding a book
+        refetchQueries: [
+            { query: ALL_AUTHORS },
+            { query: ALL_BOOKS },
+            { query: ALL_BOOKS, variables: { genre: null } }, //default view of books
+        ], //refetching after adding a book
     });
 
     const submit = async (event) => {
@@ -25,7 +29,7 @@ const NewBook = () => {
         const book = { title, author, published: publishedN, genres };
 
         addBook({ variables: book });
-        console.log("add book...", book);
+        console.log("[+] added book...", book);
 
         setTitle("");
         setPublished("");
