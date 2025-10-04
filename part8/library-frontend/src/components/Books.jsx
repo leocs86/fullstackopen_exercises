@@ -51,6 +51,7 @@ const Books = () => {
     if (resp.loading) {
         return <p>loading...</p>;
     }
+
     const books = resp.data.allBooks;
 
     return (

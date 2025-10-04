@@ -3,14 +3,13 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import Login from "./components/Login";
 import Recommended from "./components/Recommended";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client/react";
-import { ME } from "./queries";
+import { ME, ALL_BOOKS } from "./queries";
 import { useApolloClient } from "@apollo/client/react";
-
-//todo: currentUser update on mounting if in localStorage
-//todo: login triggers currentUser update
+import { BOOK_ADDED } from "./subscriptions";
+import { useSubscription } from "@apollo/client/react";
 
 const Navigator = ({ currentUser, logout }) => {
     return (
@@ -94,6 +93,54 @@ const App = () => {
         }
         console.log("currentUser:", currentUser);
     }, [meQuery]);
+
+    useSubscription(BOOK_ADDED, {
+        onError: (error) => {
+            console.log("SUBSCRIPTION ERROR", error);
+        },
+        onData: ({ data }) => {
+            console.log("SUBSCRIPTION", data);
+
+            window.alert(
+                `New book added: ${data.data.bookAdded.title} by ${data.data.bookAdded.author.name}`
+            );
+
+            client.cache.updateQuery(
+                { query: ALL_BOOKS, variables: { genre: null } },
+                (q) => {
+                    if (
+                        q && //query is already cached
+                        !q.allBooks.find((b) => b.id === data.data.bookAdded.id) //query does not already contain the added book
+                    ) {
+                        console.log(
+                            "updating ALL_BOOKS(genre) with: ",
+                            q.allBooks.concat(data.data.bookAdded)
+                        );
+                        return {
+                            allBooks: q.allBooks.concat(data.data.bookAdded),
+                        };
+                    }
+                    return q;
+                }
+            );
+            //also updating quert without genre, to cover genres filter button selection
+            client.cache.updateQuery({ query: ALL_BOOKS }, (q) => {
+                if (
+                    q && //query is already cached
+                    !q.allBooks.find((b) => b.id === data.data.bookAdded.id) //query does not already contain the added book
+                ) {
+                    console.log(
+                        "updating ALL_BOOKS with: ",
+                        q.allBooks.concat(data.data.bookAdded)
+                    );
+                    return {
+                        allBooks: q.allBooks.concat(data.data.bookAdded),
+                    };
+                }
+                return q;
+            });
+        },
+    });
 
     const logout = () => {
         window.localStorage.removeItem("token");
