@@ -1,10 +1,10 @@
-GET http://localhost:3003/api/blogs/6882c2fd01e2c5dc1ea7d36b
+GET http://localhost:3003/api/blogs/
 ###
 DELETE http://localhost:3003/api/blogs/6882c2fd01e2c5dc1ea7d36b
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbW1hIiwiaWQiOiI2ODgyMGZjZDQzMzc5ZGYzNmMxZTUxMTQiLCJpYXQiOjE3NTM0NTEzMDV9.IHD2P9a1KpWozAfZzGUUQMEeYqqfcnY-mgCUHzfBfNw
 ###
 POST http://localhost:3003/api/blogs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbW1hIiwiaWQiOiI2ODgyMGZjZDQzMzc5ZGYzNmMxZTUxMTQiLCJpYXQiOjE3NTM0NTEzMDV9.IHD2P9a1KpWozAfZzGUUQMEeYqqfcnY-mgCUHzfBfNw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbW1hIiwiaWQiOiI2OGUyZDdiNmEwYWZiNDYwMDIzODkzOTUiLCJpYXQiOjE3NTk3NDk5OTR9.WgPfxg2tU8GeD1040CFMVE7WINb_kEsXtHyIcn3loMk
 Content-Type: application/json
 
 {
@@ -21,7 +21,7 @@ Content-Type: application/json
     "likes": 99
 }
 ###
-GET http://localhost:3003/api/users
+GET http://localhost:3003/api/users/689dc8290bb8e996fdebdb4f
 ###
 POST http://localhost:3003/api/users
 Content-Type: application/json
@@ -38,4 +38,11 @@ Content-Type: application/json
 {
     "username":"mamma",
     "password":"mamma"
+}
+###
+POST http://localhost:3003/api/blogs/68e3a776f786bfc7d5ecc804/comments
+Content-Type: application/json
+
+{
+    "comment":"niggaboy"
 }

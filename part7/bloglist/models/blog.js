@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const blogSchema = mongoose.Schema({
+const blogSchema = new mongoose.Schema({
     title: { type: String, required: true },
     author: { type: String },
     url: { type: String, required: true },
@@ -11,6 +11,7 @@ const blogSchema = mongoose.Schema({
         ref: "User",
         required: true,
     },
+    comments: { type: [String], default: [] }, //comments as subresource of blogs
 });
 
 blogSchema.set("toJSON", {

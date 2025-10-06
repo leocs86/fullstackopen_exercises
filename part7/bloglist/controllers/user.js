@@ -14,6 +14,15 @@ userRouter.get("/", async (request, response, next) => {
     response.json(users);
 });
 
+userRouter.get("/:id", async (request, response, next) => {
+    const user = await User.findById(request.params.id).populate("blogs", {
+        title: 1,
+        author: 1,
+        url: 1,
+    });
+    response.json(user);
+});
+
 userRouter.post("/", async (request, response, next) => {
     if (request.body.password.length < 3) {
         const err = new Error("password must be at least 3 chars long");

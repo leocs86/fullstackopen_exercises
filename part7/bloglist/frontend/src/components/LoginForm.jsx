@@ -3,6 +3,7 @@ import { useState } from "react";
 import { login } from "../reduxStore/userSlice";
 import { useDispatch } from "react-redux";
 import { setNotification } from "../reduxStore/notificationSlice";
+import { useNavigate } from "react-router-dom";
 
 // components/LoginForm.jsx
 const LoginForm = () => {
@@ -10,6 +11,7 @@ const LoginForm = () => {
     const [password, setPassword] = useState("");
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -20,6 +22,7 @@ const LoginForm = () => {
             window.localStorage.setItem("user", JSON.stringify(user)); //saving user to brawser storage
             setPassword("");
             setUsername("");
+            navigate("/");
         } catch (err) {
             console.log(err);
             dispatch(setNotification("Wrong Credentials", "error"));

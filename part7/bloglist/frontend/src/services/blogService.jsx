@@ -6,6 +6,11 @@ const getAll = async () => {
     return response.data;
 };
 
+const getOne = async (id) => {
+    const response = await axios.get(`${baseUrl}/${id}`);
+    return response.data;
+};
+
 const createNew = async ({ title, author, url, token }) => {
     const response = await axios.post(
         baseUrl,
@@ -46,4 +51,18 @@ const deleteBlog = async ({ blogId, token }) => {
     return response.data;
 };
 
-export default { getAll, createNew, increaseLikes, deleteBlog };
+const addComment = async ({ blogId, comment }) => {
+    const response = await axios.post(`${baseUrl}/${blogId}/comments`, {
+        comment: comment,
+    });
+    return response.data;
+};
+
+export default {
+    getAll,
+    createNew,
+    increaseLikes,
+    deleteBlog,
+    getOne,
+    addComment,
+};

@@ -104,4 +104,23 @@ blogRouter.post("/", async (request, response, next) => {
     response.status(201).json(populatedBlog);
 });
 
+blogRouter.post("/:id/comments", async (request, response, next) => {
+    //using comments as subresource of blogs
+    const blog = await Blog.findById(request.params.id).populate("user", {
+        username: 1,
+        name: 1,
+    });
+
+    if (!blog) {
+        const err = new Error("blog not found");
+        err.name = "NotFoundError";
+        throw err;
+    }
+
+    blog.comments.push(request.body.comment);
+
+    const updatedBlog = await blog.save();
+    response.status(201).json(updatedBlog);
+});
+
 module.exports = blogRouter;
