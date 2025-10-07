@@ -2,12 +2,10 @@ import { useState } from "react";
 import blogService from "../services/blogService";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../reduxStore/notificationSlice";
 
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {
@@ -17,7 +15,7 @@ import {
     DialogTitle,
 } from "@mui/material";
 
-const CreateBlogForm = ({ hideBlogForm, onClose, open }) => {
+const CreateBlogForm = ({ onClose, open }) => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [url, setUrl] = useState("");

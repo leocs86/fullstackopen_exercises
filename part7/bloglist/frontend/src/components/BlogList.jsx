@@ -5,13 +5,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import blogService from "../services/blogService";
 
-import { useRef } from "react";
-
 import { Typography, Box, Button } from "@mui/material";
 
 const BlogList = () => {
-    const childRef = useRef(); //ref for togglable
-
     const blog_result = useQuery({
         queryKey: ["blogs"],
         queryFn: blogService.getAll,
@@ -43,11 +39,7 @@ const BlogList = () => {
             >
                 Create New Blog
             </Button>
-            <CreateBlogForm
-                open={dialogOpen}
-                onClose={onDialogClose}
-                hideBlogForm={() => childRef.current.toggleVisibility()}
-            />
+            <CreateBlogForm open={dialogOpen} onClose={onDialogClose} />
             {blogs
                 .sort((a, b) => b.likes - a.likes)
                 .map((blog) => (

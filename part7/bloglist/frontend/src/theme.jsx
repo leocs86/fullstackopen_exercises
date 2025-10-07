@@ -13,9 +13,8 @@ let theme = createTheme({
     },
     typography: {
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-        // optionally set variants sizes here
     },
-    spacing: 8, // default MUI scale (8px)
+    spacing: 8,
     components: {
         MuiButton: {
             defaultProps: {
@@ -24,7 +23,7 @@ let theme = createTheme({
             },
             styleOverrides: {
                 root: {
-                    textTransform: "none", // keep natural case
+                    textTransform: "none",
                     borderRadius: 8,
                 },
             },
@@ -48,7 +47,6 @@ let theme = createTheme({
                 },
             },
         },
-        // global overrides for other components...
     },
 });
 
