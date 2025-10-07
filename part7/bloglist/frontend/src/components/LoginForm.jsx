@@ -5,6 +5,16 @@ import { useDispatch } from "react-redux";
 import { setNotification } from "../reduxStore/notificationSlice";
 import { useNavigate } from "react-router-dom";
 
+import {
+    Button,
+    TextField,
+    Stack,
+    Card,
+    CardContent,
+    Typography,
+    Box,
+} from "@mui/material";
+
 // components/LoginForm.jsx
 const LoginForm = () => {
     const [username, setUsername] = useState("");
@@ -30,27 +40,44 @@ const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={handleLogin} data-testid="login-form">
-            <div>
-                username
-                <input
-                    type="text"
-                    value={username}
-                    name="Username"
-                    onChange={({ target }) => setUsername(target.value)}
-                />
-            </div>
-            <div>
-                password
-                <input
-                    type="password"
-                    value={password}
-                    name="Password"
-                    onChange={({ target }) => setPassword(target.value)}
-                />
-            </div>
-            <button type="submit">login</button>
-        </form>
+        <Card sx={{ maxWidth: 300, margin: "0 auto", mt: 10 }}>
+            <Typography variant="h5" sx={{ textAlign: "center", mt: 2 }}>
+                LOGIN
+            </Typography>
+            <CardContent>
+                <Stack
+                    component="form"
+                    onSubmit={handleLogin}
+                    data-testid="login-form"
+                    spacing={3}
+                >
+                    <TextField
+                        id="standard-basic"
+                        label="Username"
+                        variant="standard"
+                        value={username}
+                        onChange={({ target }) => setUsername(target.value)}
+                    />
+                    <TextField
+                        id="standard-basic"
+                        label="Password"
+                        variant="standard"
+                        value={password}
+                        type="password"
+                        onChange={({ target }) => setPassword(target.value)}
+                    />
+                    <Box sx={{ pt: 2, textAlign: "center", width: "100%" }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            sx={{ mt: 4, width: "100%" }}
+                        >
+                            Login
+                        </Button>
+                    </Box>
+                </Stack>
+            </CardContent>
+        </Card>
     );
 };
 

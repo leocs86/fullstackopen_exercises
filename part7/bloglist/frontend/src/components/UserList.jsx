@@ -1,6 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import userService from "../services/userService";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+
+import {
+    Typography,
+    Box,
+    TableContainer,
+    TableHead,
+    TableCell,
+    TableRow,
+    TableBody,
+    Table,
+    Link,
+} from "@mui/material";
 
 const UserList = () => {
     const users_result = useQuery({
@@ -10,34 +22,43 @@ const UserList = () => {
     });
 
     if (users_result.isError) {
-        return <p>err loading data...</p>;
+        return <Typography>err loading data...</Typography>;
     }
     if (users_result.isLoading) {
-        return <p>loading data...</p>;
+        return <Typography>loading data...</Typography>;
     }
 
     const users = users_result.data;
 
     return (
-        <>
-            <h2>Users</h2>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>username</th>
-                        <th>blogs</th>
-                    </tr>
-                    {users.map((u) => (
-                        <tr key={u.id}>
-                            <td>
-                                <Link to={`/users/${u.id}`}>{u.username}</Link>
-                            </td>
-                            <td>{u.blogs.length}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </>
+        <Box>
+            <Typography variant="h2">users</Typography>
+            <TableContainer sx={{ maxWidth: 500 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>username</TableCell>
+                            <TableCell>blogs</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {users.map((u) => (
+                            <TableRow key={u.id}>
+                                <TableCell>
+                                    <Link
+                                        component={RouterLink}
+                                        to={`/users/${u.id}`}
+                                    >
+                                        {u.username}
+                                    </Link>
+                                </TableCell>
+                                <TableCell>{u.blogs.length}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Box>
     );
 };
 

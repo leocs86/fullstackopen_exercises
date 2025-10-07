@@ -1,12 +1,14 @@
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+
+import { Link, Typography } from "@mui/material";
 
 const Blog = ({ blog }) => {
     return (
-        <Link to={`/blogs/${blog.id}`}>
-            <p data-testid="title-author">
+        <Link component={RouterLink} to={`/blogs/${blog.id}`}>
+            <Typography>
                 {blog.title} (by {blog.author})
-            </p>
+            </Typography>
         </Link>
     );
 };

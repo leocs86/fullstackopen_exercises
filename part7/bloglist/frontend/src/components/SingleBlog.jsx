@@ -1,5 +1,4 @@
 import blogService from "../services/blogService";
-import { useEffect, useState } from "react";
 
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,6 +6,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../reduxStore/notificationSlice";
 import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+
+import {
+    Typography,
+    Box,
+    IconButton,
+    Link,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon,
+    Stack,
+} from "@mui/material";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import CommentForm from "./CommentForm";
 
@@ -14,25 +29,23 @@ const SingleBlog = ({ id }) => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user);
-    //const [blog, setBlog] = useState(null);
+
     const navigate = useNavigate();
 
     //mutations
     const likeMutation = useMutation({
         mutationFn: blogService.increaseLikes,
         onSuccess: (updBlog) => {
-            setBlog({ ...blog, likes: updBlog.likes }); //update local state
-            //we don't need to update the whole blogs list in cache because we are on single blog page
-            // const blogs = queryClient.getQueryData(["blogs"]);
-            // const newBlogs = blogs.map((b) =>
-            //     b.id === updBlog.id ? {...b, likes:updBlog.likes} : b
-            // );
-            // queryClient.setQueryData(["blogs"], newBlogs);
+            queryClient.setQueryData(["blog", id], (oldBlog) => ({
+                ...oldBlog,
+                likes: updBlog.likes,
+            }));
 
             console.log(`[^] ${updBlog.id} liked`);
             dispatch(setNotification("blog successfully liked", "info"));
         },
         onError: (err) => {
+            console.log("err in liking", err);
             dispatch(setNotification("error in liking the blog", "error"));
         },
     });
@@ -45,11 +58,9 @@ const SingleBlog = ({ id }) => {
             navigate("/blogs"); //redirect to bloglist after deletion
         },
         onError: (err, req) => {
+            console.log("err in delete", err);
             //already deleted 404
             if (err.response?.status === 404) {
-                /*                 const blogs = queryClient.getQueryData(["blogs"]);
-                const newBlogs = blogs.filter((b) => b.id !== req.blogId);
-                queryClient.setQueryData(["blogs"], newBlogs); */
                 setNotification("blog doesn't exist", "error");
                 navigate("/blogs");
             } else {
@@ -60,28 +71,6 @@ const SingleBlog = ({ id }) => {
         },
     });
 
-    //using useState and useEffect because no other component needs this
-    /*     useEffect(() => {
-        const fetchBlog = async () => {
-            try {
-                const result = await blogService.getOne(id);
-                setBlog(result);
-            } catch (error) {
-                dispatch(setNotification("invalid blog id", "error"));
-                setBlog("error");
-            }
-        };
-        fetchBlog();
-    }, []);
-
-    if (!blog) {
-        return <p>loading data...</p>;
-    }
-
-    if (blog === "error") {
-        return <p>malformatted id...</p>;
-    } */
-
     const blog_result = useQuery({
         queryKey: ["blog", id],
         queryFn: () => blogService.getOne(id),
@@ -89,14 +78,15 @@ const SingleBlog = ({ id }) => {
     });
 
     if (blog_result.isError) {
-        return <p>err loading data...</p>;
+        return <Typography>err loading data...</Typography>;
     }
 
     if (blog_result.isLoading) {
-        return <p>loading...</p>;
+        return <Typography>loading...</Typography>;
     }
 
     const blog = blog_result.data;
+    console.log(blog);
 
     const handleLike = () => {
         likeMutation.mutate({ blogId: blog.id, currentLikes: blog.likes });
@@ -110,35 +100,49 @@ const SingleBlog = ({ id }) => {
     };
 
     return (
-        <>
-            <h2>{blog.title}</h2>
-            <p>
-                by <b>{blog.author}</b>
-            </p>
-            <a href={blog.url}>{blog.url}</a>
-            <p>
+        <Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="h2">{blog.title}</Typography>
+                {user.id === blog.user.id && (
+                    <IconButton
+                        onClick={handleDelete}
+                        size="small"
+                        color="secondary"
+                    >
+                        <DeleteIcon sx={{ maxHeight: 30, maxWidth: 30 }} />
+                    </IconButton>
+                )}
+            </Stack>
+            <Typography>by "{blog.author}"</Typography>
+            <Link href={blog.url}>{blog.url}</Link>
+            <Typography>
                 {blog.likes} likes{" "}
-                <button style={{ cursor: "pointer" }} onClick={handleLike}>
-                    like
-                </button>
-            </p>
-            <p>added by {blog.user.username}</p>
-            {user.id === blog.user.id && (
-                <button
-                    onClick={handleDelete}
-                    style={{ color: "red", cursor: "pointer" }}
-                >
-                    delete
-                </button>
-            )}
-            <h3>Comments ({blog.comments.length})</h3>
+                <IconButton onClick={handleLike} size="small">
+                    <ThumbUpIcon sx={{ maxHeight: 16, maxWidth: 16 }} />
+                </IconButton>
+            </Typography>
+            <Typography>
+                added by{" "}
+                <Link component={RouterLink} to={`/users/${blog.user.id}`}>
+                    {blog.user.username}
+                </Link>
+            </Typography>
+            <Typography variant="h4" sx={{ mt: 4, mb: 0 }}>
+                Comments ({blog.comments.length})
+            </Typography>
             <CommentForm blogId={blog.id} />
-            <ul>
+            <List>
                 {blog.comments.map((c, i) => (
-                    <li key={i}>{c}</li>
+                    //<li key={i}>{c}</li>
+                    <ListItem key={i} sx={{ pl: 0, pb: 0, pt: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 24 }}>
+                            <FiberManualRecordIcon sx={{ fontSize: 8 }} />
+                        </ListItemIcon>
+                        <ListItemText primary={c} />
+                    </ListItem>
                 ))}
-            </ul>
-        </>
+            </List>
+        </Box>
     );
 };
 

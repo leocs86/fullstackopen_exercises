@@ -4,37 +4,79 @@ import LoginForm from "./components/LoginForm";
 import Profile from "./components/Profile";
 import UserList from "./components/UserList";
 import SingleBlog from "./components/SingleBlog";
+import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "./reduxStore/userSlice";
-import { Routes, Route, Link, Navigate, useMatch } from "react-router-dom";
+import {
+    Routes,
+    Route,
+    Navigate,
+    useMatch,
+    Link as RouterLink,
+} from "react-router-dom";
+
+import {
+    Breadcrumbs,
+    Button,
+    Link,
+    Container,
+    Typography,
+    Stack,
+    Divider,
+} from "@mui/material";
 
 const Navbar = ({ user }) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         dispatch(logout());
         window.localStorage.removeItem("user");
+        navigate("/login");
     };
 
     return (
-        <div style={{ display: "flex", gap: "10px" }}>
-            <Link to="/blogs">
-                <button style={{ cursor: "pointer" }}>bloglist</button>
-            </Link>
-            <Link to={`/users/${user.id}`}>
-                <button style={{ cursor: "pointer" }}>profile</button>
-            </Link>
-            <Link to="/users">
-                <button style={{ cursor: "pointer" }}>users</button>
-            </Link>
-            <button onClick={handleLogout} style={{ cursor: "pointer" }}>
-                logout
-            </button>
-            <p style={{ marginLeft: ".5rem", margin: "0" }}>
+        <Stack direction="row" sx={{ mb: 2 }} spacing={2} alignItems="baseline">
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    underline="hover"
+                    color="inherit"
+                    component={RouterLink}
+                    to="/blogs"
+                >
+                    bloglist
+                </Link>
+                <Link
+                    underline="hover"
+                    color="inherit"
+                    component={RouterLink}
+                    to={`/users/${user.id}`}
+                >
+                    profile
+                </Link>
+                <Link
+                    underline="hover"
+                    color="inherit"
+                    component={RouterLink}
+                    to="/users"
+                >
+                    users
+                </Link>
+                <Button
+                    onClick={handleLogout}
+                    variant="contained"
+                    size="small"
+                    color="secondary"
+                >
+                    logout
+                </Button>
+            </Breadcrumbs>
+            <Divider orientation="vertical" flexItem />
+            <Typography variant="body2" sx={{ mt: 1, mb: 2 }}>
                 logged in as <strong>{user.name}</strong>
-            </p>
-        </div>
+            </Typography>
+        </Stack>
     );
 };
 
@@ -48,16 +90,23 @@ const App = () => {
     const blogId = matchBlog ? matchBlog.params.id : null;
 
     return (
-        <>
+        <Container sx={{ mt: 2 }}>
             <Notification />
-            {user ? <Navbar user={user} /> : <></>}
+            {user ? <Navbar user={user} /> : null}
 
             <Routes>
                 <Route path="/login" element={<LoginForm />} />
                 <Route
                     path="/"
                     element={
-                        user ? <>home</> : <Navigate replace to="/login" />
+                        user ? (
+                            <Typography>
+                                there's nothing here...
+                                <br /> try to use the navbar
+                            </Typography>
+                        ) : (
+                            <Navigate replace to="/login" />
+                        )
                     }
                 />
                 <Route
@@ -75,7 +124,7 @@ const App = () => {
                 <Route path="/users/:id" element={<Profile id={userId} />} />
                 <Route path="/blogs/:id" element={<SingleBlog id={blogId} />} />
             </Routes>
-        </>
+        </Container>
     );
 };
 

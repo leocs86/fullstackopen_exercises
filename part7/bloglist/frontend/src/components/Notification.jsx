@@ -1,32 +1,24 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+
+import Alert from "@mui/material/Alert";
 
 const Notification = () => {
-    const dispatch = useDispatch();
     const notification = useSelector((state) => state.notification);
 
     if (!notification.message) {
-        return <></>;
+        return null;
     }
 
-    let color;
-    notification.type == "error" ? (color = "red") : (color = "green");
+    let type = "info";
+    notification.type == "error" ? (type = "error") : (type = "success");
 
     return (
-        <div
-            style={{
-                border: "1px solid",
-                borderColor: "white",
-                backgroundColor: color,
-                color: "white",
-                position: "fixed",
-                textAlign: "center",
-                right: "1rem",
-                fontSize: "20px",
-                padding: ".3rem",
-            }}
+        <Alert
+            severity={type}
+            sx={{ position: "fixed", right: "1rem", top: "1rem" }}
         >
             {notification.message}
-        </div>
+        </Alert>
     );
 };
 

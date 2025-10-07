@@ -5,6 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { setNotification } from "../reduxStore/notificationSlice";
 
+import { TextField, Button, Stack } from "@mui/material";
+
 const CommentForm = ({ blogId }) => {
     const [comment, setComment] = useState("");
     const queryClient = useQueryClient();
@@ -26,17 +28,28 @@ const CommentForm = ({ blogId }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <Stack
+            component="form"
+            onSubmit={handleSubmit}
+            direction="row"
+            spacing={2}
+            sx={{ maxHeight: "fit" }}
+            alignItems="center"
+        >
             {" "}
-            <input
+            <TextField
+                id="standard-basic"
+                label="Comment"
+                variant="standard"
                 type="text"
                 value={comment}
-                name="Comment"
-                data-testid="comment"
                 onChange={({ target }) => setComment(target.value)}
+                size="small"
             />
-            <button type="submit">create</button>
-        </form>
+            <Button type="submit" variant="contained" size="small">
+                Create
+            </Button>
+        </Stack>
     );
 };
 
